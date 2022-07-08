@@ -1,65 +1,99 @@
-import React from "react";
-import { createTheme, ThemeProvider } from "@rneui/themed";
-import { View, Text, Button, Image } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Home from "./screens/HomeScreen";
-import NavBar from "./components/NavBar";
-import { Header } from "@rneui/base";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import "react-native-gesture-handler";
+import * as React from 'react';
+import * as SecureStore from 'expo-secure-store';
+import HomeScreen from "./screens/HomeScreen";
+import SignInScreen from "./screens/SignInScreen";
+import { createStackNavigator } from '@react-navigation/stack';
 
-const theme = createTheme({
-  lightColors: {},
-  darkColors: {},
-});
+const AuthContext = React.createContext();
 
-function DetailsScreen({navigation}) {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Details Screen</Text>
-      <Button
-        title="Go to Details... again"
-        onPress={() => navigation.push('Details')}
-      />
-      <Button title="Go to Home" onPress={() => navigation.navigate('Home')} />
-      <Button title="Go back" onPress={() => navigation.goBack()} />
-    </View>
+export default function App({ navigation }) {
+  const [state, dispatch] = React.useReducer(
+    (prevState, action) => {
+      switch (action.type) {
+        case 'RESTORE_TOKEN':
+          return {
+            ...prevState,
+            userToken: action.token,
+            isLoading: false,
+          };
+        case 'SIGN_IN':
+          return {
+            ...prevState,
+            isSignout: false,
+            userToken: action.token,
+          };
+        case 'SIGN_OUT':
+          return {
+            ...prevState,
+            isSignout: true,
+            userToken: null,
+          };
+      }
+    },
+    {
+      isLoading: true,
+      isSignout: false,
+      userToken: null,
+    }
   );
-}
 
-function LogoTitle() {
-  return (
-    <Image
-      style={{ width: 50, height: 50 }}
-      source={require('./assets/favicon.png')}
-    />
+  React.useEffect(() => {
+    // Fetch the token from storage then navigate to our appropriate place
+    const bootstrapAsync = async () => {
+      let userToken;
+
+      try {
+        // Restore token stored in `SecureStore` or any other encrypted storage
+        // userToken = await SecureStore.getItemAsync('userToken');
+      } catch (e) {
+        // Restoring token failed
+      }
+
+      // After restoring token, we may need to validate it in production apps
+
+      // This will switch to the App screen or Auth screen and this loading
+      // screen will be unmounted and thrown away.
+      dispatch({ type: 'RESTORE_TOKEN', token: userToken });
+    };
+
+    bootstrapAsync();
+  }, []);
+
+  const authContext = React.useMemo(
+    () => ({
+      signIn: async (data) => {
+        // In a production app, we need to send some data (usually username, password) to server and get a token
+        // We will also need to handle errors if sign in failed
+        // After getting token, we need to persist the token using `SecureStore` or any other encrypted storage
+        // In the example, we'll use a dummy token
+
+        dispatch({ type: 'SIGN_IN', token: 'dummy-auth-token' });
+      },
+      signOut: () => dispatch({ type: 'SIGN_OUT' }),
+      signUp: async (data) => {
+        // In a production app, we need to send user data to server and get a token
+        // We will also need to handle errors if sign up failed
+        // After getting token, we need to persist the token using `SecureStore` or any other encrypted storage
+        // In the example, we'll use a dummy token
+
+        dispatch({ type: 'SIGN_IN', token: 'dummy-auth-token' });
+      },
+    }),
+    []
   );
-}
-
-const Stack = createNativeStackNavigator();
-export default function App() {
+  const Stack = createStackNavigator();
   return (
-    <ThemeProvider theme={theme}>
+    <AuthContext.Provider value={authContext}>
       <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" 
-        component={Home} 
-        options={{
-          headerTitle: props => <LogoTitle {...props} />,
-          headerRight: () => (
-            <Button
-              onPress={() => alert('This is a button!')}
-              title="Info"
-              color="black"
-            />
-          ),
-        }}
-        />
-        <Stack.Screen name="Details"
-         component={DetailsScreen} 
-         />
+      <Stack.Navigator>
+        {state.userToken == null ? (
+          <Stack.Screen name="SignIn" component={SignInScreen} />
+        ) : (
+          <Stack.Screen name="Home" component={HomeScreen} />
+        )}
       </Stack.Navigator>
-       </NavigationContainer>
-    </ThemeProvider>
+      </NavigationContainer>
+    </AuthContext.Provider>
   );
 }
