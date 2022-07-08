@@ -2,7 +2,7 @@ import React from "react";
 import { View } from "react-native";
 import { makeStyles, Text, Button, useThemeMode } from "@rneui/themed";
 
-export default function App() {
+export default function Home() {
   const styles = useStyles();
   const { setMode, mode } = useThemeMode();
 
@@ -12,9 +12,9 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text h3>Start Using RNE </Text>
+      <Text h3>BTO App</Text>
       <Text style={styles.text}>
-        Open up App.tsx to start working on your app!
+        Brainhack 2022
       </Text>
       <Button onPress={handleOnPress}>Switch Theme</Button>
     </View>
