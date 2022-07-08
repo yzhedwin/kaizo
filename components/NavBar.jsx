@@ -7,7 +7,7 @@ export default () => {
       backgroundImageStyle={{}}
       barStyle="default"
       centerComponent={{
-        text: "BTO App",
+        text: "Travel App",
         style: { color: "#fff" }
       }}
       centerContainerStyle={{}}

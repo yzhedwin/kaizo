@@ -2,7 +2,7 @@ import React from "react";
 import { View } from "react-native";
 import { makeStyles, Text, Button, useThemeMode } from "@rneui/themed";
 
-export default function Home() {
+export default function Home({navigation}) {
   const styles = useStyles();
   const { setMode, mode } = useThemeMode();
 
@@ -12,11 +12,15 @@ export default function Home() {
 
   return (
     <View style={styles.container}>
-      <Text h3>BTO App</Text>
+      <Text h3>Travel App</Text>
       <Text style={styles.text}>
-        Brainhack 2022
+        App your convenience
       </Text>
       <Button onPress={handleOnPress}>Switch Theme</Button>
+      <Button
+        title="Go to Details"
+        onPress={() => navigation.navigate('Details')}
+      />
     </View>
   );
 }
