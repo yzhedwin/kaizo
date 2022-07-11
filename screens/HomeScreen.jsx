@@ -1,38 +1,37 @@
-import "react-native-gesture-handler";
-import * as React from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Ionicons } from "@expo/vector-icons";
-import SettingsStackScreen from "./Settings";
-import HomeDrawer from "./HomeStack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { Button, Text, View } from "react-native";
+import DetailsScreen from "./DetailsScreen";
+import { Drawer, SettingsScreen } from "./SettingsScreen";
 
-const Tab = createBottomTabNavigator();
+const HomeStack = createNativeStackNavigator();
 
-export default function HomeScreen() {
+function HomeStackScreen() {
   return (
-    <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName;
-            if (route.name === "Home") {
-              iconName = focused
-                ? "information-circle"
-                : "information-circle-outline";
-            } else if (route.name === "Settings") {
-              iconName = focused ? "list" : "list-sharp";
-            }
-            // You can return any component that you like here!
-            return <Ionicons name={iconName} size={size} color={color} />;
-          },
-          tabBarActiveTintColor: "red",
-          tabBarInactiveTintColor: "gray",
-          headerShown: false,
-        })}
-      >
-        <Tab.Screen name="Home" component={HomeDrawer} />
-        <Tab.Screen name="Settings" component={SettingsStackScreen} />
-      </Tab.Navigator>
-    </NavigationContainer>
+    <HomeStack.Navigator screenOptions={{ headerShown: false }}>
+      <HomeStack.Screen name="HomeScreen" component={HomeScreen} />
+      <HomeStack.Screen name="DetailsScreen" component={DetailsScreen} />
+      {/* other screens */}
+    </HomeStack.Navigator>
+  );
+}
+
+export function HomeScreen({ navigation }) {
+  return (
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <Text>Home Screen</Text>
+      <Button
+        title="Go to Details"
+        onPress={() => navigation.navigate("DetailsScreen")}
+      />
+    </View>
+  );
+}
+
+export default function HomeDrawer() {
+  return (
+    <Drawer.Navigator>
+      <Drawer.Screen name="Kaizo" component={HomeStackScreen} />
+      <Drawer.Screen name="Settings" component={SettingsScreen} />
+    </Drawer.Navigator>
   );
 }
