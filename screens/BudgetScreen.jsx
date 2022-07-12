@@ -1,7 +1,13 @@
-import React from 'react'
+import React from "react";
+import { Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function BudgetScreen() {
   return (
-    <div>BudgetScreen</div>
-  )
+    <SafeAreaView
+      style={{ flex: 1, justifyContent: "space-between", alignItems: "center" }}
+    >
+      <Text>BudgetScreen</Text>
+    </SafeAreaView>
+  );
 }

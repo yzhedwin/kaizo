@@ -4,9 +4,8 @@ import * as SecureStore from "expo-secure-store";
 import SignInScreen from "./screens/SignInScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 import HomeTabs from "./screens/HomeTabs";
-
+import { SafeAreaProvider } from "react-native-safe-area-context";
 export const AuthContext = React.createContext();
 
 export default function App() {
@@ -86,18 +85,18 @@ export default function App() {
   );
   const Stack = createStackNavigator();
   return (
-    <SafeAreaProvider>
-      <AuthContext.Provider value={authContext}>
+    <AuthContext.Provider value={authContext}>
+      <SafeAreaProvider>
         <NavigationContainer>
           <Stack.Navigator screenOptions={{ headerShown: false }}>
-            {state.userToken == null ? (
+            {state.userToken === null ? (
               <Stack.Screen name="SignIn" component={SignInScreen} />
             ) : (
               <Stack.Screen name="Home" component={HomeTabs} />
             )}
           </Stack.Navigator>
         </NavigationContainer>
-      </AuthContext.Provider>
-    </SafeAreaProvider>
+      </SafeAreaProvider>
+    </AuthContext.Provider>
   );
 }

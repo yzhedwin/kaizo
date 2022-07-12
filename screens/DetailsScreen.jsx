@@ -1,13 +1,16 @@
-import { Button, Text, View } from "react-native";
+import { Button, Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function DetailsScreen({ navigation }) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Details!</Text>
-        <Button
+  return (
+    <SafeAreaView
+      style={{ flex: 1, justifyContent: "space-between", alignItems: "center" }}
+    >
+      <Text>Details!</Text>
+      <Button
         title="Go to HomePage"
         onPress={() => navigation.navigate("HomeScreen")}
       />
-      </View>
-    );
-  }
+    </SafeAreaView>
+  );
+}

@@ -13,10 +13,11 @@ const Tab = createBottomTabNavigator();
 export default function HomeTabs() {
   return (
     <Tab.Navigator
+    initialRouteName= "Home Tab"
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
-          if (route.name === "Home") {
+          if (route.name === "Home Tab") {
             iconName = focused
               ? "home-sharp"
               : "home-outline";
@@ -36,9 +37,10 @@ export default function HomeTabs() {
         tabBarInactiveTintColor: "gray",
         tabBarShowLabel: false,
         headerShown: false,
+
       })}
     >
-      <Tab.Screen name="Home" component={HomeDrawer} />
+      <Tab.Screen name="Home Tab" component={HomeDrawer} />
       <Tab.Screen name="Budget Tracker" component={BudgetScreen} />
       <Tab.Screen name="Packing List" component={PListScreen} />
       <Tab.Screen name="Travel Planner" component={TravelScreen} />
