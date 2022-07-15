@@ -7,6 +7,7 @@ import BudgetScreen from "./BudgetScreen";
 import PListScreen from "./PListScreen";
 import TravelScreen from "./TravelScreen";
 import GPSScreen from "./GPSScreen";
+import Track from "./LocationTrack";
 
 const Tab = createBottomTabNavigator();
 

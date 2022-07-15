@@ -1,5 +1,6 @@
 import * as React from "react";
-import { Button, TextInput, View } from "react-native";
+import { Button, TextInput } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { AuthContext } from "../App";
 
 export default function SignInScreen() {
@@ -9,7 +10,7 @@ export default function SignInScreen() {
     const { signIn } = React.useContext(AuthContext);
   
     return (
-      <View>
+      <SafeAreaView>
         <TextInput
           placeholder="Username"
           value={username}
@@ -22,6 +23,6 @@ export default function SignInScreen() {
           secureTextEntry
         />
         <Button title="Sign in" onPress={() => signIn({ username, password })} />
-      </View>
+      </SafeAreaView>
     );
   }
