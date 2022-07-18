@@ -7,7 +7,7 @@ import { getAuth, GoogleAuthProvider, signInWithCredential } from 'firebase/auth
 import { Button } from 'react-native';
 import Firebase from '../components/auth/firebaseConfig';
 import { SafeAreaView } from 'react-native-safe-area-context';
-/*hello */
+/*change repo url */
 
 
 WebBrowser.maybeCompleteAuthSession();
