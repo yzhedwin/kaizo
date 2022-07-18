@@ -1,81 +1,31 @@
 import "react-native-gesture-handler";
 import * as React from "react";
-import * as SecureStore from "expo-secure-store";
-import SignInScreen from "./screens/SignInScreen";
 import { createStackNavigator } from "@react-navigation/stack";
-import { NavigationContainer, DarkTheme, } from "@react-navigation/native";
+import { NavigationContainer, DarkTheme } from "@react-navigation/native";
 import HomeTabs from "./screens/HomeTabs";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { Provider } from 'react-redux'
-import store from "./redux/store";
-
-// export const AuthContext = React.createContext();
+import LoginScreen from "./screens/LoginScreen";
+import { AuthenticatedUserContext, AuthenticatedUserProvider } from "./components/navigation/AuthenticatedUserProvider";
+import GoogleSignIn from "./screens/GoogleSignIn";
 
 export default function App() {
-
-
-  // React.useEffect(() => {
-  //   // Fetch the token from storage then navigate to our appropriate place
-  //   const bootstrapAsync = async () => {
-  //     let userToken;
-
-  //     try {
-  //       // Restore token stored in `SecureStore` or any other encrypted storage
-  //       // userToken = await SecureStore.getItemAsync('userToken');
-  //     } catch (e) {
-  //       // Restoring token failed
-  //     }
-
-  //     // After restoring token, we may need to validate it in production apps
-
-  //     // This will switch to the App screen or Auth screen and this loading
-  //     // screen will be unmounted and thrown away.
-  //     dispatch({ type: "RESTORE_TOKEN", token: userToken });
-  //   };
-
-  //   bootstrapAsync();
-  // }, []);
-
-  // const authContext = React.useMemo(
-  //   () => ({
-  //     signIn: async (data) => {
-  //       // In a production app, we need to send some data (usually username, password) to server and get a token
-  //       // We will also need to handle errors if sign in failed
-  //       // After getting token, we need to persist the token using `SecureStore` or any other encrypted storage
-  //       // In the example, we'll use a dummy token
-
-  //       dispatch({ type: "SIGN_IN", token: "dummy-auth-token" });
-  //     },
-  //     signOut: () => dispatch({ type: "SIGN_OUT" }),
-  //     signUp: async (data) => {
-  //       // In a production app, we need to send user data to server and get a token
-  //       // We will also need to handle errors if sign up failed
-  //       // After getting token, we need to persist the token using `SecureStore` or any other encrypted storage
-  //       // In the example, we'll use a dummy token
-
-  //       dispatch({ type: "SIGN_IN", token: "dummy-auth-token" });
-  //     },
-  //   }),
-  //   []
-  // );
+  const { user } = React.useContext(AuthenticatedUserContext);
+  console.log(user)
   const Stack = createStackNavigator();
   return (
-      <SafeAreaProvider>
-        <NavigationContainer theme={DarkTheme}>
-          <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <AuthenticatedUserProvider>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          {!user ? (
+            <Stack.Screen name="SignIn" component={GoogleSignIn} />
+          ) : (
             <Stack.Screen name="Home" component={HomeTabs} />
-            {/* {state.userToken === null ? (
-              <Stack.Screen name="SignIn" component={SignInScreen} />
-            ) : (
-              <Stack.Screen name="Home" component={HomeTabs} />
-            )} */}
-          </Stack.Navigator>
-        </NavigationContainer>
-      </SafeAreaProvider>
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SafeAreaProvider>
+    </AuthenticatedUserProvider>
   );
 }
 
-    // <Provider store={store}>
-    {/* <AuthContext.Provider value={authContext}> */}
-    {/* </AuthContext.Provider> */}
-    // </Provider>

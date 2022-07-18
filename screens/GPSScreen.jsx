@@ -8,7 +8,7 @@ import {
   SafeAreaView,
   Alert,
 } from "react-native";
-import MapView, { Marker, AnimatedRegion } from "react-native-maps";
+import MapView, { Marker, AnimatedRegion, PROVIDER_GOOGLE } from "react-native-maps";
 import * as TaskManager from "expo-task-manager";
 import * as Location from "expo-location";
 const Scaledrone = require("scaledrone-react-native");
@@ -164,6 +164,7 @@ export default class GPSScreen extends Component {
       <SafeAreaView style={{ flex: 1 }}>
         <View style={{ flex: 1, paddingHorizontal: 20 }}>
           <MapView
+            provider={PROVIDER_GOOGLE}
             style={styles.map}
             ref={(ref) => {
               this.map = ref;
