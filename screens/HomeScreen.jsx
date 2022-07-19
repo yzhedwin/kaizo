@@ -4,12 +4,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import DetailsScreen from "./DetailsScreen";
 import { Drawer, SettingsScreen } from "./SettingsScreen";
 import { StatusBar } from 'expo-status-bar';
-import Firebase from "../components/auth/firebaseConfig";
 import { useContext } from "react";
 import { AuthenticatedUserContext } from "../components/navigation/AuthenticatedUserProvider";
 
 const HomeStack = createNativeStackNavigator();
-const auth = Firebase.auth;
 const handleSignOut = async () => {
   try {
     await auth.signOut();
@@ -39,13 +37,15 @@ export function HomeScreen({ navigation }) {
       <StatusBar style='dark-content' />
       <View style={styles.row}>
         <Text style={styles.title}>Welcome {user}!</Text>
+        </View>
+        <View>
         <Button
           title="logout"
           size={24}
-          color='#fff'
+          color='black'
           onPress={handleSignOut}
         />
-      </View>
+        </View>
       <Text style={styles.text}>Your UID is: {user} </Text>
     </SafeAreaView>
   );
@@ -61,12 +61,6 @@ export default function HomeDrawer() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#e93b81',
-    paddingTop: 50,
-    paddingHorizontal: 12
-  },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -76,11 +70,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '600',
-    color: '#fff'
+    color: 'black'
   },
   text: {
     fontSize: 16,
     fontWeight: 'normal',
-    color: '#fff'
+    color: 'black'
   }
 });

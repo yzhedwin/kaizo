@@ -8,9 +8,7 @@ import {
   Button as RNButton,
   TextInput,
 } from "react-native";
-import Firebase from "../components/auth/firebaseConfig";
 
-const auth = Firebase.auth();
 
 export default function SignupScreen({ navigation }) {
   const [email, setEmail] = useState("");

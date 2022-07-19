@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { StyleSheet, Text, View, Button as RNButton, TextInput, Button } from 'react-native';
 import Firebase from '../components/auth/firebaseConfig';
 
-const auth = Firebase.auth();
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');

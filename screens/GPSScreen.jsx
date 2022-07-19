@@ -11,6 +11,7 @@ import {
 import MapView, { Marker, AnimatedRegion, PROVIDER_GOOGLE } from "react-native-maps";
 import * as TaskManager from "expo-task-manager";
 import * as Location from "expo-location";
+import { StatusBar } from "expo-status-bar";
 const Scaledrone = require("scaledrone-react-native");
 const SCALEDRONE_CHANNEL_ID = require("../scaledrone_channel_id.json");
 const LOCATION_TASK_NAME = "LOCATION_TASK_NAME";
@@ -162,6 +163,7 @@ export default class GPSScreen extends Component {
   render() {
     return (
       <SafeAreaView style={{ flex: 1 }}>
+        <StatusBar style='dark-content' />
         <View style={{ flex: 1, paddingHorizontal: 20 }}>
           <MapView
             provider={PROVIDER_GOOGLE}
