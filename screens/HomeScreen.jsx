@@ -4,10 +4,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import DetailsScreen from "./DetailsScreen";
 import { Drawer, SettingsScreen } from "./SettingsScreen";
 import { StatusBar } from "expo-status-bar";
-import { selectUserData, signOut } from "../components/auth/authSlice";
+import { selectUserData, signOut } from "../components/auth/AuthSlice";
 import { useSelector } from "react-redux";
 import { getAuth } from "firebase/auth";
-import Firebase from "../components/auth/firebaseConfig";
+import Firebase from "../components/auth/FirebaseConfig";
 import { useDispatch } from "react-redux";
 
 const HomeStack = createNativeStackNavigator();

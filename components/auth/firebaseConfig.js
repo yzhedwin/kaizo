@@ -4,7 +4,7 @@ import 'firebase/compat/auth';
 import Constants from 'expo-constants';
 
 // Initialize Firebase
-const firebaseConfig = {
+const FirebaseConfig = {
   apiKey: Constants.manifest.extra.apiKey,
   authDomain: Constants.manifest.extra.authDomain,
   projectId: Constants.manifest.extra.projectId,
@@ -16,7 +16,7 @@ const firebaseConfig = {
 let Firebase;
 
 if (firebase.apps.length === 0) {
-  Firebase = firebase.initializeApp(firebaseConfig);
+  Firebase = firebase.initializeApp(FirebaseConfig);
 }
 
 export default Firebase;

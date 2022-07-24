@@ -6,7 +6,6 @@ import HomeTabs from "./HomeTabs";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import GoogleSignIn from "./GoogleSignIn";
 import { useSelector } from "react-redux";
-import { useState } from "react";
 
 export default function Authentication() {
   const isAuthenticated = useSelector((state) => state.auth.isSignIn);

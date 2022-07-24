@@ -6,17 +6,26 @@ import {
   GoogleAuthProvider,
   signInWithCredential,
 } from "firebase/auth";
-import { Alert, Platform, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  ImageBackground,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Constants from "expo-constants";
 import { StatusBar } from "expo-status-bar";
 import Button from "../components/Button";
-import Firebase from "../components/auth/firebaseConfig";
-import { signIn } from "../components/auth/authSlice";
+import Firebase from "../components/auth/FirebaseConfig";
+import { signIn } from "../components/auth/AuthSlice";
 import { useDispatch } from "react-redux";
 
 WebBrowser.maybeCompleteAuthSession();
-
+const image = {
+  uri: "https://media.geeksforgeeks.org/wp-content/uploads/20220217151648/download3.png",
+};
 export default function GoogleSignIn() {
   const dispatch = useDispatch();
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
@@ -32,70 +41,80 @@ export default function GoogleSignIn() {
       const credential = GoogleAuthProvider.credential(id_token);
       signInWithCredential(auth, credential).then((result) => {
         /*Update user authorization*/
-        const {uid, displayName, email} = result.user;
-        const {accessToken} = result.user;
-        dispatch(signIn({
-          data: {uid, displayName, email},
-          token: {accessToken}
-        }));
+        const { uid, displayName, email } = result.user;
+        const { accessToken } = result.user;
+        dispatch(
+          signIn({
+            data: { uid, displayName, email },
+            token: { accessToken },
+          })
+        );
       });
     } else {
-      console.log("Login failed")
+      console.log("Login failed");
       if (Platform.OS !== "web") {
-       Alert.prompt("Kaizo Login", "Failed to login. Please try again")
+        Alert.prompt("Kaizo Login", "Failed to login. Please try again");
       }
     }
   }, [response]);
 
   return (
-    <SafeAreaView style={{ backgroundColor: "white" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#86d8f7" }}>
       <StatusBar style="dark-content" />
-      <View style={styles.titleView}>
-        <Text style={styles.title}>Kaizo</Text>
-      </View>
-      <View style={styles.buttonContainer}>
-        <Button
-          buttonStyle={styles.logInButton}
-          textStyle={styles.logInText}
-          disabled={!request}
-          title="Login with Google"
-          onPress={() => {
-            promptAsync();
-          }}
-        />
-        <Button
-          buttonStyle={styles.signUpButton}
-          textStyle={styles.logInText}
-          title="Sign up"
-          //onPress={}
-        />
-      </View>
+      <ImageBackground
+        source={{
+          uri: "https://media.geeksforgeeks.org/wp-content/uploads/20220217151648/download3.png",
+        }}
+        resizeMode="cover"
+        style={styles.img}
+      >
+        <View style={styles.pageContainer}>
+          <View style={styles.titleView}>
+            <Text style={styles.title}>Kaizo</Text>
+          </View>
+          <View style={styles.buttonContainer}>
+            <Button
+              buttonStyle={styles.logInButton}
+              textStyle={styles.logInText}
+              disabled={!request}
+              title="Login with Google"
+              onPress={() => {
+                promptAsync();
+              }}
+            />
+            <Button
+              buttonStyle={styles.signUpButton}
+              textStyle={styles.logInText}
+              title="Sign up"
+              //onPress={}
+            />
+          </View>
+        </View>
+      </ImageBackground>
     </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
   title: {
-    fontSize: 30,
+    fontSize: 40,
+    color: "white",
     fontWeight: "bold",
   },
   titleView: {
-    alignItems: "center",
-    backgroundColor: "#6495ed",
+    alignSelf: "center",
   },
   signUpButton: {
-    alignItems: "center",
-    margin: "100%",
-    marginHorizontal: 70,
     paddingVertical: 15,
+    paddingHorizontal: 10,
+    marginHorizontal: 20,
     borderRadius: 4,
     elevation: 5,
     backgroundColor: "black",
   },
   logInButton: {
-    alignItems: "center",
-    margin: "100%",
-    marginHorizontal: 70,
     paddingVertical: 15,
+    paddingHorizontal: 10,
+    marginHorizontal: 20,
     borderRadius: 4,
     elevation: 5,
     backgroundColor: "black",
@@ -108,6 +127,20 @@ const styles = StyleSheet.create({
     color: "white",
   },
   buttonContainer: {
-    backgroundColor: "#86d8f7",
+    display: "flex",
+    flexDirection: "row",
+  },
+  pageContainer: {
+    display: "flex",
+    flex: 1,
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "space-evenly",
+  },
+  img: {
+    display: "flex",
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center"
   },
 });
