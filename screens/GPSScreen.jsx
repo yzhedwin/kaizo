@@ -13,6 +13,7 @@ import * as Location from "expo-location";
 import { StatusBar } from "expo-status-bar";
 import { getToken, onMessage } from "@firebase/messaging";
 import { messaging } from "../components/auth/FirebaseConfig";
+import MapView ,{ PROVIDER_GOOGLE } from "react-native-maps";
 import Constants from "expo-constants";
 let foregroundSubscription = null;
 
@@ -178,6 +179,20 @@ class GPSScreen extends Component {
       <SafeAreaView style={{ flex: 1 }}>
         <StatusBar style="dark-content" />
         <View style={{ flex: 1, paddingHorizontal: 20 }}>
+          <MapView
+            provider={PROVIDER_GOOGLE}
+            style={styles.map}
+            ref={(ref) => {
+              this.map = ref;
+            }}
+            initialRegion={{
+              latitude: 37.600425,
+              longitude: -122.385861,
+              latitudeDelta: LATITUDE_DELTA,
+              longitudeDelta: LONGITUDE_DELTA,
+            }}
+          >
+          </MapView>
           <Text>Longitude: {this.state.position.longitude}</Text>
           <Text>Lattitude: {this.state.position.latitude}</Text>
         </View>
@@ -186,3 +201,9 @@ class GPSScreen extends Component {
   }
 }
 export default GPSScreen
+
+const styles = StyleSheet.create({
+  map: {
+    ...StyleSheet.absoluteFillObject,
+  },
+})
