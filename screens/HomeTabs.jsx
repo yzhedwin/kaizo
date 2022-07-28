@@ -7,11 +7,13 @@ import BudgetScreen from "./BudgetScreen";
 import PListScreen from "./PListScreen";
 import TravelScreen from "./TravelScreen";
 import GPSScreen from "./GPSScreen";
-import Track from "./LocationTrack";
+import { selectUserData } from "../components/auth/AuthSlice";
+import { useSelector } from "react-redux";
 
 const Tab = createBottomTabNavigator();
 
 export default function HomeTabs() {
+  const user = useSelector(selectUserData);
   return (
     <Tab.Navigator
     initialRouteName= "Home Tab"
@@ -45,7 +47,7 @@ export default function HomeTabs() {
       <Tab.Screen name="Budget Tracker" component={BudgetScreen} />
       <Tab.Screen name="Packing List" component={PListScreen} />
       <Tab.Screen name="Travel Planner" component={TravelScreen} />
-      <Tab.Screen name="Find Each Other" component={GPSScreen} />
+      <Tab.Screen name="Find Each Other" children={props => <GPSScreen user={user} {...props} />} />
     </Tab.Navigator>
   );
 }
