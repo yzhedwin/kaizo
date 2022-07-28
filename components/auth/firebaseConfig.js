@@ -1,10 +1,11 @@
 // v9 compat packages are API compatible with v8 code
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
+import { initializeApp } from 'firebase/app';
+import 'firebase/auth';
 import Constants from 'expo-constants';
+import { getMessaging } from "firebase/messaging";
 
 // Initialize Firebase
-const FirebaseConfig = {
+export const FirebaseConfig = {
   apiKey: Constants.manifest.extra.apiKey,
   authDomain: Constants.manifest.extra.authDomain,
   projectId: Constants.manifest.extra.projectId,
@@ -12,11 +13,6 @@ const FirebaseConfig = {
   messagingSenderId: Constants.manifest.extra.messagingSenderId,
   appId: Constants.manifest.extra.appId
 };
-
-let Firebase;
-
-if (firebase.apps.length === 0) {
-  Firebase = firebase.initializeApp(FirebaseConfig);
-}
-
+const Firebase = initializeApp(FirebaseConfig);
+export const messaging = getMessaging(Firebase);
 export default Firebase;
