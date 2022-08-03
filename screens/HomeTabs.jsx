@@ -7,8 +7,8 @@ import BudgetScreen from "./BudgetScreen";
 import PListScreen from "./PListScreen";
 import TravelScreen from "./TravelScreen";
 import GPSScreen from "./GPSScreen";
-import { selectUserData } from "../components/auth/AuthSlice";
 import { useSelector } from "react-redux";
+import { selectUserData } from "../components/auth/authSlice";
 
 const Tab = createBottomTabNavigator();
 

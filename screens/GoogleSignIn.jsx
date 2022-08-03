@@ -18,14 +18,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Constants from "expo-constants";
 import { StatusBar } from "expo-status-bar";
 import Button from "../components/Button";
-import Firebase from "../components/auth/FirebaseConfig";
-import { signIn } from "../components/auth/AuthSlice";
+import Firebase from "../components/auth/firebaseConfig";
+import { signIn } from "../components/auth/authSlice";
 import { useDispatch } from "react-redux";
+const image = require("../assets/kaizo-splash.png");
 
 WebBrowser.maybeCompleteAuthSession();
-const image = {
-  uri: "https://media.geeksforgeeks.org/wp-content/uploads/20220217151648/download3.png",
-};
+
 export default function GoogleSignIn() {
   const dispatch = useDispatch();
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
@@ -41,10 +40,10 @@ export default function GoogleSignIn() {
       const credential = GoogleAuthProvider.credential(id_token);
       signInWithCredential(auth, credential).then((result) => {
         /*Update user authorization*/
-        const { uid, displayName, email, photoURL, accessToken  } = result.user;
+        const { uid, displayName, email, photoURL, accessToken } = result.user;
         dispatch(
           signIn({
-            data: { uid, displayName, email, photoURL},
+            data: { uid, displayName, email, photoURL },
             token: { accessToken },
           })
         );
@@ -52,7 +51,7 @@ export default function GoogleSignIn() {
     } else {
       console.log("Login failed");
       if (Platform.OS !== "web") {
-        Alert.prompt("Kaizo Login", "Failed to login. Please try again");
+        Alert.alert("Kaizo Login", "Failed to login. Please try again");
       }
     }
   }, [response]);
@@ -60,16 +59,9 @@ export default function GoogleSignIn() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#86d8f7" }}>
       <StatusBar style="dark-content" />
-      <ImageBackground
-        source={{
-          uri: "https://media.geeksforgeeks.org/wp-content/uploads/20220217151648/download3.png",
-        }}
-        resizeMode="cover"
-        style={styles.img}
-      >
+      <ImageBackground source={image} resizeMode="cover" style={styles.img}>
         <View style={styles.pageContainer}>
           <View style={styles.titleView}>
-            <Text style={styles.title}>Kaizo</Text>
           </View>
           <View style={styles.buttonContainer}>
             <Button
@@ -140,6 +132,6 @@ const styles = StyleSheet.create({
     display: "flex",
     flex: 1,
     flexDirection: "row",
-    justifyContent: "center"
+    justifyContent: "center",
   },
 });

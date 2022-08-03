@@ -4,10 +4,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import DetailsScreen from "./DetailsScreen";
 import { Drawer, SettingsScreen } from "./SettingsScreen";
 import { StatusBar } from "expo-status-bar";
-import { selectUserData, signOut } from "../components/auth/AuthSlice";
+import { selectUserData, signOut } from "../components/auth/authSlice";
 import { useSelector } from "react-redux";
 import { getAuth } from "firebase/auth";
-import Firebase from "../components/auth/FirebaseConfig";
+import Firebase from "../components/auth/firebaseConfig";
 import { useDispatch } from "react-redux";
 
 const HomeStack = createNativeStackNavigator();
@@ -45,7 +45,7 @@ const render = (user, handleSignOut) => {
       </View>
       <View>
         <Button
-          title="logout"
+          title="Logout"
           size={24}
           color="black"
           onPress={handleSignOut}

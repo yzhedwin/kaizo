@@ -3,6 +3,7 @@
 **.expo
 **.env
 **/google-services.json
+**/GoogleService-Info.plist
 **/app.config.js
 **/expo-service-worker.js
 **/firebase-messaging-sw.js
