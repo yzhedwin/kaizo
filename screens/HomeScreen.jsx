@@ -2,29 +2,15 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DetailsScreen from "./DetailsScreen";
-import { Drawer, SettingsScreen } from "./SettingsScreen";
-import { StatusBar } from "expo-status-bar";
 import { selectUserData, signOut } from "../components/auth/authSlice";
 import { useSelector } from "react-redux";
 import { getAuth } from "firebase/auth";
 import Firebase from "../components/auth/firebaseConfig";
 import { useDispatch } from "react-redux";
+import { FocusAwareStatusBar } from "../components/FocusAwareStatusBar";
 
-const HomeStack = createNativeStackNavigator();
 const auth = getAuth(Firebase);
-
-function HomeScreenStack() {
-  return (
-    <HomeStack.Navigator
-      screenOptions={{ headerShown: false }}
-      initialRouteName="Kaizo"
-    >
-      <HomeStack.Screen name="HomeScreen" component={HomeScreen} />
-      <HomeStack.Screen name="DetailsScreen" component={DetailsScreen} />
-      {/* other screens */}
-    </HomeStack.Navigator>
-  );
-}
+const HomeStack = createNativeStackNavigator();
 const renderEmpty = () => {
   return (
   <SafeAreaView
@@ -39,7 +25,7 @@ const render = (user, handleSignOut) => {
     <SafeAreaView
       style={{ flex: 1, justifyContent: "space-between", alignItems: "center" }}
     >
-      <StatusBar style="dark-content" />
+      <FocusAwareStatusBar barStyle='dark-content'/>
       <View style={styles.row}>
         <Text style={styles.title}>Welcome {user.displayName}!</Text>
       </View>
@@ -55,7 +41,7 @@ const render = (user, handleSignOut) => {
     </SafeAreaView>
   )
 };
-export function HomeScreen() {
+function HomeScreen() {
   const dispatch = useDispatch();
   const handleSignOut = async () => {
     try {
@@ -71,12 +57,16 @@ export function HomeScreen() {
   return user === null ? renderEmpty() : render(user, handleSignOut);
 }
 
-export default function HomeDrawer() {
+export default function HomeScreenStack() {
   return (
-    <Drawer.Navigator>
-      <Drawer.Screen name="Kaizo" component={HomeScreenStack} />
-      <Drawer.Screen name="Settings" component={SettingsScreen} />
-    </Drawer.Navigator>
+    <HomeStack.Navigator
+      screenOptions={{ headerShown: false }}
+      initialRouteName="Kaizo"
+    >
+      <HomeStack.Screen name="HomeScreen" component={HomeScreen} />
+      <HomeStack.Screen name="DetailsScreen" component={DetailsScreen} />
+      {/* other screens */}
+    </HomeStack.Navigator>
   );
 }
 

@@ -1,21 +1,13 @@
 import React, { Component } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  Dimensions,
-  TouchableOpacity,
-  SafeAreaView,
-  Alert,
-} from "react-native";
+import { StyleSheet, View, Text, Dimensions, SafeAreaView } from "react-native";
 import * as Location from "expo-location";
-import { StatusBar } from "expo-status-bar";
 import MapView, {
   Marker,
   AnimatedRegion,
   PROVIDER_GOOGLE,
 } from "react-native-maps";
-import Constants from "expo-constants";
+import { FocusAwareStatusBar } from "../components/FocusAwareStatusBar";
+
 const Scaledrone = require("scaledrone-react-native");
 const SCALEDRONE_CHANNEL_ID = require("../scaledrone_channel_id.json");
 
@@ -91,7 +83,7 @@ class GPSScreen extends Component {
         return console.error(error);
       }
       // Client is now authenticated and ready to start working
-      console.log("Client is authenticated")
+      console.log("Client is authenticated");
     });
     room = drone.subscribe(ROOM_LOCATION, {
       historyCount: 50, // load 50 past messages
@@ -303,7 +295,7 @@ class GPSScreen extends Component {
   render() {
     return (
       <SafeAreaView style={{ flex: 0.75 }}>
-        <StatusBar style="dark-content" />
+        <FocusAwareStatusBar barStyle="dark-content" />
         <View style={{ flex: 1, paddingHorizontal: 20 }}>
           <MapView
             provider={PROVIDER_GOOGLE}

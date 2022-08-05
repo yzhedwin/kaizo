@@ -2,8 +2,6 @@
 import { initializeApp } from 'firebase/app';
 import 'firebase/auth';
 import Constants from 'expo-constants';
-//import { getMessaging } from "firebase/messaging";
-
 // Initialize Firebase
 export const firebaseConfig = {
   apiKey: Constants.manifest.extra.apiKey,
@@ -14,6 +12,4 @@ export const firebaseConfig = {
   appId: Constants.manifest.extra.appId
 };
 const Firebase = initializeApp(firebaseConfig);
-
-//export const messaging = getMessaging(Firebase)
 export default Firebase;

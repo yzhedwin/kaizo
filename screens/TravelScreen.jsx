@@ -1,6 +1,7 @@
-import React from 'react'
-import { Text } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import React from "react";
+import { Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { FocusAwareStatusBar } from "../components/FocusAwareStatusBar";
 
 /* Display Itinery */
 
@@ -9,7 +10,8 @@ export default function TravelScreen() {
     <SafeAreaView
       style={{ flex: 1, justifyContent: "space-between", alignItems: "center" }}
     >
+      <FocusAwareStatusBar barStyle="dark-content" />
       <Text>Travel Planner</Text>
     </SafeAreaView>
-  )
+  );
 }

@@ -16,11 +16,11 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Constants from "expo-constants";
-import { StatusBar } from "expo-status-bar";
 import Button from "../components/Button";
 import Firebase from "../components/auth/firebaseConfig";
 import { signIn } from "../components/auth/authSlice";
 import { useDispatch } from "react-redux";
+import { FocusAwareStatusBar } from "../components/FocusAwareStatusBar";
 const image = require("../assets/kaizo-splash.png");
 
 WebBrowser.maybeCompleteAuthSession();
@@ -58,11 +58,10 @@ export default function GoogleSignIn() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#86d8f7" }}>
-      <StatusBar style="dark-content" />
+      <FocusAwareStatusBar barStyle="dark-content" />
       <ImageBackground source={image} resizeMode="cover" style={styles.img}>
         <View style={styles.pageContainer}>
-          <View style={styles.titleView}>
-          </View>
+          <View style={styles.titleView}></View>
           <View style={styles.buttonContainer}>
             <Button
               buttonStyle={styles.logInButton}
