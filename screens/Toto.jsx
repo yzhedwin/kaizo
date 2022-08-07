@@ -2,7 +2,6 @@ import React from "react";
 import {
   ActivityIndicator,
   Button,
-  Clipboard,
   FlatList,
   Image,
   Share,
@@ -12,23 +11,21 @@ import {
   View,
   Platform,
 } from "react-native";
+import Clipboard from "@react-native-community/clipboard";
 import * as ImagePicker from "expo-image-picker";
-import * as Random from "expo-random";
 import Constants from "expo-constants";
-import Firebase from "../components/auth/firebaseConfig";
-import {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-} from "firebase/storage";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { StatusBar } from "expo-status-bar";
 import { FocusAwareStatusBar } from "../components/FocusAwareStatusBar";
+import "react-native-get-random-values";
+import * as FileSystem from "expo-file-system";
+
+const SERVER_PORT = "1231";
+const BASE_URL = "http://192.168.79.18";
 
 export default class Toto extends React.Component {
   state = {
     image: null,
+    gsImage: null,
     uploading: false,
     googleResponse: null,
   };
@@ -58,14 +55,7 @@ export default class Toto extends React.Component {
             />
 
             <Button onPress={this.takePhoto} title="Take a photo" />
-            {this.state.googleResponse && (
-              <FlatList
-                data={this.state.googleResponse.responses[0]?.labelAnnotations}
-                extraData={this.state}
-                keyExtractor={this.keyExtractor}
-                renderItem={({ item }) => <Text>Item: {item.description}</Text>}
-              />
-            )}
+
             {this.maybeRenderImage()}
             {this.maybeRenderUploadingOverlay()}
           </View>
@@ -211,7 +201,7 @@ export default class Toto extends React.Component {
       this.setState({ uploading: true });
 
       if (!pickerResult.cancelled) {
-        await this.uploadImageAsync(pickerResult.uri);
+        await this.uploadImage(pickerResult.uri);
       }
     } catch (e) {
       console.log(e);
@@ -220,29 +210,18 @@ export default class Toto extends React.Component {
       this.setState({ uploading: false });
     }
   };
-
+  //do on server
   submitToGoogle = async () => {
     try {
       this.setState({ uploading: true });
-      let { image } = this.state;
+      let { gsImage } = this.state;
       let body = JSON.stringify({
         requests: [
           {
-            features: [
-              // { type: 'LABEL_DETECTION', maxResults: 10 },
-              // { type: 'LANDMARK_DETECTION', maxResults: 5 },
-              // { type: 'FACE_DETECTION', maxResults: 5 },
-              // { type: 'LOGO_DETECTION', maxResults: 5 },
-              { type: "TEXT_DETECTION", maxResults: 5 },
-              { type: "DOCUMENT_TEXT_DETECTION", maxResults: 5 },
-              // { type: 'SAFE_SEARCH_DETECTION', maxResults: 5 },
-              // { type: 'IMAGE_PROPERTIES', maxResults: 5 },
-              // { type: 'CROP_HINTS', maxResults: 5 },
-              // { type: 'WEB_DETECTION', maxResults: 5 }
-            ],
+            features: [{ type: "TEXT_DETECTION", maxResults: 5 }],
             image: {
               source: {
-                imageUri: image,
+                imageUri: gsImage,
               },
             },
           },
@@ -278,67 +257,31 @@ export default class Toto extends React.Component {
     }
   };
 
-  async uploadImageAsync(uri) {
+  async uploadImage(uri) {
     let name = this.props.user.displayName;
-    const blob = await new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.onload = function () {
-        resolve(xhr.response);
-      };
-      xhr.onerror = function (e) {
-        console.log(e);
-        reject(new TypeError("Network request failed"));
-      };
-      xhr.responseType = "blob";
-      xhr.open("GET", uri, true);
-      xhr.send(null);
-    });
-    const storage = getStorage(Firebase);
-    const uuid = Random.getRandomBytes(16).toString().replace(/,/g, "");
-    const storageRef = ref(storage, (name + uuid).toString().trim());
-    const uploadTask = uploadBytesResumable(storageRef, blob);
-    // Register three observers:
-    // 1. 'state_changed' observer, called any time the state changes
-    // 2. Error observer, called on failure
-    // 3. Completion observer, called on successful completion
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        // Observe state change events such as progress, pause, and resume
-        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log("Upload is " + progress + "% done");
-        switch (snapshot.state) {
-          case "paused":
-            console.log("Upload is paused");
-            break;
-          case "running":
-            console.log("Upload is running");
-            break;
+    try {
+      const response = await FileSystem.uploadAsync(
+        `${BASE_URL}:${SERVER_PORT}/api/gstorage/upload`,
+        uri,
+        {
+          fieldName: "file",
+          httpMethod: "POST",
+          uploadType: FileSystem.FileSystemUploadType.MULTIPART,
+          parameters: { user: name },
         }
-      },
-      (error) => {
-        // Handle unsuccessful uploads
-        console.log(error);
-      },
-      () => {
-        // Handle successful uploads on complete
-        // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          this.setState({ image: downloadURL });
-          blob.close();
-          return downloadURL;
-        });
-      }
-    );
+      );
+      const { publicUrl, gsUrl } = JSON.parse(response.body);
+      this.setState({ image: publicUrl, gsImage: gsUrl });
+      console.log(publicUrl);
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black",
+    backgroundColor: "white",
   },
   developmentModeText: {
     marginBottom: 20,
@@ -368,3 +311,60 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
+/* Alternate solution
+async uploadImageAsync(uri) {
+  let name = this.props.user.displayName;
+  const blob = await new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+      resolve(xhr.response);
+    };
+    xhr.onerror = function (e) {
+      console.log(e);
+      reject(new TypeError("Network request failed"));
+    };
+    xhr.responseType = "blob";
+    xhr.open("GET", uri, true);
+    xhr.send(null);
+  });
+
+  const storageRef = ref(getStorage(Firebase), uuidv4());
+  const url = "gs://" + storageRef.bucket + "/" + storageRef.fullPath;
+  const uploadTask = uploadBytesResumable(storageRef, blob);
+  // Register three observers:
+  // 1. 'state_changed' observer, called any time the state changes
+  // 2. Error observer, called on failure
+  // 3. Completion observer, called on successful completion
+  uploadTask.on(
+    "state_changed",
+    (snapshot) => {
+      // Observe state change events such as progress, pause, and resume
+      // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+      const progress =
+        (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      console.log("Upload is " + progress + "% done");
+      switch (snapshot.state) {
+        case "paused":
+          console.log("Upload is paused");
+          break;
+        case "running":
+          console.log("Upload is running");
+          break;
+      }
+    },
+    (error) => {
+      // Handle unsuccessful uploads
+      console.log(error);
+    },
+    async () => {
+      blob.close();
+      // Handle successful uploads on complete
+      // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+      const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
+      //console.log(downloadUrl);
+      this.setState({ image: downloadUrl, gsImage: url });
+      return downloadUrl;
+    }
+  );
+}
+*/

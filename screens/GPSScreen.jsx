@@ -23,7 +23,7 @@ const initialRegion = {
   latitudeDelta: LATITUDE_DELTA,
   longitudeDelta: LONGITUDE_DELTA,
 };
-const BASE_URL = "http://192.168.86.76";
+const BASE_URL = "http://192.168.79.18";
 const SERVER_PORT = ":1234";
 const ROOM_LOCATION = "observable-location";
 let drone;
