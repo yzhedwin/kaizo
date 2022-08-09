@@ -9,7 +9,7 @@ import GPSScreen from "../screens/GPSScreen";
 import { useSelector } from "react-redux";
 import { selectUserData } from "./auth/authSlice";
 import HomeDrawer from "./HomeDrawer";
-import Toto from "../screens/Toto";
+import Loto from "../screens/Loto";
 import { Image } from "react-native";
 
 const image = require("../assets/spool.jpeg");
@@ -24,7 +24,7 @@ export default function HomeTabs() {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
-          if (route.name === "Toto") {
+          if (route.name === "Loto") {
             return (
               <Image
                 style={{ width: size, height: size }}
@@ -55,8 +55,8 @@ export default function HomeTabs() {
       <Tab.Screen name="Budget Tracker" component={BudgetScreen} />
       <Tab.Screen name="Packing List" component={PListScreen} />
       <Tab.Screen
-        name="Toto"
-        children={(props) => <Toto user={user} {...props} />}
+        name="Loto"
+        children={(props) => <Loto user={user} {...props} />}
       />
       <Tab.Screen name="Travel Planner" component={TravelScreen} />
       <Tab.Screen

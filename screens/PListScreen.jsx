@@ -4,6 +4,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { FocusAwareStatusBar } from "../components/FocusAwareStatusBar";
 
 /* Packing List
+Lets user input packing list
+
 Loads number of lists from firestore and render as clickable image
 List item can be checked off/deleted/added
 

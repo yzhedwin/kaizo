@@ -2,27 +2,25 @@ import React from "react";
 import {
   ActivityIndicator,
   Button,
-  FlatList,
   Image,
   Share,
   StyleSheet,
   Text,
   ScrollView,
   View,
-  Platform,
 } from "react-native";
 import Clipboard from "@react-native-community/clipboard";
 import * as ImagePicker from "expo-image-picker";
-import Constants from "expo-constants";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FocusAwareStatusBar } from "../components/FocusAwareStatusBar";
 import "react-native-get-random-values";
 import * as FileSystem from "expo-file-system";
+import Constants from "expo-constants";
 
-const SERVER_PORT = "1231";
-const BASE_URL = "http://192.168.79.18";
+const SERVER_PORT = Constants.manifest.extra.developmentPort;
+const BASE_URL = Constants.manifest.extra.developmentHost;
 
-export default class Toto extends React.Component {
+export default class Loto extends React.Component {
   state = {
     image: null,
     gsImage: null,
@@ -30,14 +28,14 @@ export default class Toto extends React.Component {
     googleResponse: null,
   };
 
-  async componentDidMount() {}
+  componentDidMount() {}
 
   render() {
     let { image } = this.state;
 
     return (
       <SafeAreaView style={styles.container}>
-        <FocusAwareStatusBar barStyle="light-content" />
+        <FocusAwareStatusBar barStyle="dark-content" />
         <ScrollView
           style={styles.container}
           contentContainerStyle={styles.contentContainer}
@@ -191,7 +189,6 @@ export default class Toto extends React.Component {
         allowsEditing: true,
         aspect: [4, 3],
       });
-
       this.handleImagePicked(pickerResult);
     }
   };
@@ -215,7 +212,7 @@ export default class Toto extends React.Component {
     try {
       this.setState({ uploading: true });
       let { gsImage } = this.state;
-      let body = JSON.stringify({
+      let request = {
         requests: [
           {
             features: [{ type: "TEXT_DETECTION", maxResults: 5 }],
@@ -226,26 +223,17 @@ export default class Toto extends React.Component {
             },
           },
         ],
+      };
+      const response = await fetch(`${BASE_URL}:${SERVER_PORT}/api/gvision`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ request }),
+      }).catch((e) => {
+        console.log(e);
       });
-      let visionAPIKey;
-      if (Platform.OS === "web") {
-        visionAPIKey = Constants.manifest.extra.webGoogleAPI;
-      } else if (Platform.OS === "android") {
-        visionAPIKey = Constants.manifest.extra.androidGoogleAPI;
-      } else {
-        visionAPIKey = Constants.manifest.extra.iosGoogleAPI;
-      }
-      let response = await fetch(
-        "https://vision.googleapis.com/v1/images:annotate?key=" + visionAPIKey,
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-          body: body,
-        }
-      );
       let responseJson = await response.json();
       console.log(responseJson);
       this.setState({
@@ -272,7 +260,6 @@ export default class Toto extends React.Component {
       );
       const { publicUrl, gsUrl } = JSON.parse(response.body);
       this.setState({ image: publicUrl, gsImage: gsUrl });
-      console.log(publicUrl);
     } catch (error) {
       console.log(error);
     }

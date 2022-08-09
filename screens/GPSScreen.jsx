@@ -7,6 +7,7 @@ import MapView, {
   PROVIDER_GOOGLE,
 } from "react-native-maps";
 import { FocusAwareStatusBar } from "../components/FocusAwareStatusBar";
+import Constants from "expo-constants";
 
 const Scaledrone = require("scaledrone-react-native");
 const SCALEDRONE_CHANNEL_ID = require("../scaledrone_channel_id.json");
@@ -23,12 +24,18 @@ const initialRegion = {
   latitudeDelta: LATITUDE_DELTA,
   longitudeDelta: LONGITUDE_DELTA,
 };
-const BASE_URL = "http://192.168.79.18";
-const SERVER_PORT = ":1234";
+
+const SERVER_PORT = Constants.manifest.extra.developmentPort;
+const BASE_URL = Constants.manifest.extra.developmentHost;
 const ROOM_LOCATION = "observable-location";
 let drone;
 let room;
 let status;
+
+/*
+Phone Tracker
+Tracks the phones connected to the app on a map
+*/
 class GPSScreen extends Component {
   constructor() {
     super();
@@ -211,7 +218,7 @@ class GPSScreen extends Component {
     let location = await Location.getCurrentPositionAsync({});
     const { latitude, longitude } = location.coords;
     //TODO
-    return fetch(BASE_URL + SERVER_PORT + "/publish", {
+    return fetch(`${BASE_URL}:${SERVER_PORT}/publish`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -240,7 +247,7 @@ class GPSScreen extends Component {
   //store data to firestore and scaledrone
   async authRequest(clientId, userData) {
     const { displayName } = userData;
-    return fetch(BASE_URL + SERVER_PORT + "/auth", {
+    return fetch(`${BASE_URL}:${SERVER_PORT}/auth`, {
       method: "POST",
       headers: {
         Accept: "application/json",
