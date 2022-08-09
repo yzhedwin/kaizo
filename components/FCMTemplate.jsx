@@ -1,137 +1,116 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Text, Dimensions, SafeAreaView } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  Dimensions,
+  TouchableOpacity,
+  SafeAreaView,
+  Alert,
+} from "react-native";
+import * as TaskManager from "expo-task-manager";
 import * as Location from "expo-location";
-import MapView, {
-  Marker,
-  AnimatedRegion,
-  PROVIDER_GOOGLE,
-} from "react-native-maps";
-import { FocusAwareStatusBar } from "../components/FocusAwareStatusBar";
-
-const Scaledrone = require("scaledrone-react-native");
-const SCALEDRONE_CHANNEL_ID = require("../scaledrone_channel_id.json");
-
+import { StatusBar } from "expo-status-bar";
+//import { getToken, onMessage } from "@firebase/messaging";
+//import { messaging } from "../components/auth/firebaseConfig";
+import MapView, {Marker, AnimatedRegion, PROVIDER_GOOGLE } from "react-native-maps";
+import Constants from "expo-constants";
 let foregroundSubscription = null;
+
 const screen = Dimensions.get("window");
 
 const ASPECT_RATIO = screen.width / screen.height;
 const LATITUDE_DELTA = 0.0922;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
-const initialRegion = {
-  latitude: -37.112146,
-  longitude: 144.857483,
-  latitudeDelta: LATITUDE_DELTA,
-  longitudeDelta: LONGITUDE_DELTA,
-};
-const BASE_URL = "http://192.168.79.18";
+const BASE_URL = "http://192.168.79.18"; //"http://192.168.86.174";
 const SERVER_PORT = ":1234";
-const ROOM_LOCATION = "observable-location";
-let drone;
-let room;
 let status;
+
 class GPSScreen extends Component {
   constructor() {
     super();
     this.state = {
       members: [],
       position: {},
-      region: { initialRegion },
     };
   }
-  onRegionChange = (region) => {
-    console.log("onRegionChange", region);
-  };
-
-  onRegionChangeComplete = (region) => {
-    console.log("onRegionChangeComplete", region);
-  };
-
   componentWillUnmount() {
     //unsub
     this.stopForegroundUpdate();
-    room.unsubscribe();
-    drone.close();
-    drone.on("close", (reason) => {
-      console.error(reason);
-      console.log("Connection has been closed");
-    });
-    drone.on("disconnect", () => {
-      // User has disconnected, Scaledrone will try to reconnect soon
-      console.log("Connection has been disconnected");
-    });
   }
   componentDidMount() {
     this.requestPermissions();
     this.startForegroundUpdate();
-    drone = new Scaledrone(SCALEDRONE_CHANNEL_ID);
-    drone.on("error", (error) => {
-      console.log("Error Initialising Scaledrone Client");
-      console.error(error);
-    });
-    drone.on("close", (reason) => console.error(reason));
-    drone.on("open", (error) => {
-      if (error) {
-        console.log("Error Initialising Scaledrone Client");
-        return console.error(error);
-      }
-      this.authRequest(drone.clientId, this.props.user)
-        .then((jwt) => drone.authenticate(jwt))
-        .catch((error) => console.log(error));
-    });
-    drone.on("authenticate", function (error) {
-      if (error) {
-        return console.error(error);
-      }
-      // Client is now authenticated and ready to start working
-      console.log("Client is authenticated");
-    });
-    room = drone.subscribe(ROOM_LOCATION, {
-      historyCount: 50, // load 50 past messages
-    });
-    this.startForegroundUpdate();
-
-    room.on("open", (error) => {
-      if (error) {
-        return console.error(error);
-      }
-      const { latitude, longitude } = this.state.position;
-      // publish device's new location
-      //this.publishLocation(this.props.user.uid, this.props.user.displayName);
-      drone.publish({
-        room: ROOM_LOCATION,
-        message: { latitude, longitude },
+    //Get Token
+    getToken(messaging, {
+      vapidKey: Constants.manifest.extra.cloudMessagingKey,
+    })
+      .then((currentToken) => {
+        if (currentToken) {
+          // Send the token to your server and update the UI if necessary
+          // Send User info and topic subscribed
+          // Subscribe to GPS
+          this.registerMessagingToken(
+            this.props.user.uid,
+            this.props.user.displayName,
+            currentToken
+          );
+        } else {
+          // Show permission request UI
+          console.log(
+            "No registration token available. Request permission to generate one."
+          );
+          // ...
+        }
+      })
+      .catch((err) => {
+        console.log("An error occurred while retrieving token. ", err);
+        // ...
       });
-    });
-    // received past message
-    room.on("history_message", (message) =>
-      this.updateLocation(message.data, message.clientId)
-    );
-    // received new message
-    room.on("data", (data, member) => this.updateLocation(data, member.id));
-    // array of all connected members
-    room.on("members", (members) =>
-      this.setState((prevState) => ({ ...prevState, members: members }))
-    );
-    // new member joined room
-    room.on("member_join", (member) => {
-      const members = this.state.members.slice(0);
-      members.push(member);
-      this.setState((prevState) => ({ ...prevState, members: members }));
-    });
-    // member left room
-    room.on("member_leave", (member) => {
-      const members = this.state.members.slice(0);
-      const index = members.findIndex((m) => m.id === member.id);
-      if (index !== -1) {
-        members.splice(index, 1);
-        this.setState((prevState) => ({ ...prevState, members: members }));
+
+    // Read Messages
+    // uid -> birth, name
+    onMessage(messaging, (payload) => {
+      console.log("Message received. ", payload);
+      const { birth, name, uid, color, latitude, longitude } = payload.data;
+      // TODO: Update state
+      if (JSON.parse(birth)) {
+        const members = this.state.members.slice(0);
+        const newObj = {
+          uid,
+          name,
+          birth,
+          color,
+          location: { latitude, longitude },
+        };
+        let isRegistered = false;
+        for (const x of members) {
+          if (x.uid === newObj.uid) {
+            isRegistered = true;
+          }
+        }
+        if (!isRegistered) {
+          members.push(newObj);
+          console.log(members);
+          this.setState((prevState) => ({ ...prevState, members: members }));
+        }
+      } else {
+        console.log("Member alr registered");
+        //Get member based on uid then update object location
+        console.log("Update location");
       }
     });
+    // Send location to Firestore
+    // Update all new locations
+    // Update connections
 
     console.log("GPS MOUNTED");
   }
 
-  componentDidUpdate() {}
+  componentDidUpdate() {
+    //Publish location changes (backend)
+    this.publishLocation(this.props.user.uid, this.props.user.displayName);
+  }
 
   async requestPermissions() {
     const foreground = await Location.requestForegroundPermissionsAsync();
@@ -140,6 +119,7 @@ class GPSScreen extends Component {
 
   // Start location tracking in foreground
   async startForegroundUpdate() {
+    console.log("Start Update");
     // Check if foreground permission is granted
     const { granted } = await Location.getForegroundPermissionsAsync();
     if (!granted) {
@@ -156,16 +136,9 @@ class GPSScreen extends Component {
         accuracy: Location.Accuracy.BestForNavigation,
       },
       (location) => {
-        const region = {
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-          latitudeDelta: LATITUDE_DELTA,
-          longitudeDelta: LONGITUDE_DELTA,
-        };
         this.setState((prevState) => ({
           ...prevState,
           position: location.coords,
-          region: region,
         }));
       }
     );
@@ -237,16 +210,22 @@ class GPSScreen extends Component {
       })
       .catch((error) => console.error(error));
   }
-  //store data to firestore and scaledrone
-  async authRequest(clientId, userData) {
-    const { displayName } = userData;
-    return fetch(BASE_URL + SERVER_PORT + "/auth", {
+  async registerMessagingToken(uid, username, regToken) {
+    //Init Position
+    let location = await Location.getCurrentPositionAsync({});
+    const { latitude, longitude } = location.coords;
+    return fetch(BASE_URL + SERVER_PORT + "/register", {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ clientId, displayName }),
+      body: JSON.stringify({
+        uid,
+        username,
+        location: { latitude, longitude },
+        regToken,
+      }),
     })
       .then((res) => {
         status = res.status;
@@ -254,6 +233,7 @@ class GPSScreen extends Component {
       })
       .then((text) => {
         if (status === 200) {
+          console.log("Registered successfully");
           return text;
         } else {
           alert(text);
@@ -265,13 +245,17 @@ class GPSScreen extends Component {
   //TODO List members on drawer
   createMembers() {
     const { members } = this.state;
+    let id = 0;
     return members.map((member) => {
-      const { displayName, color } = member.authData;
+      const { name, color } = member;
+      id++;
       return (
-        <View key={member.id} style={styles.member}>
-          <View style={[styles.avatar, { backgroundColor: color }]}></View>
-          <Text style={styles.memberName}>{displayName} [Last Seen: ]</Text>
-        </View>
+        <SafeAreaView style={{ flex: 1 }}>
+          <View key={id} style={styles.member}>
+            <View style={[styles.avatar, { backgroundColor: color }]}></View>
+            <Text style={styles.memberName}>{name}</Text>
+          </View>
+        </SafeAreaView>
       );
     });
   }
@@ -279,23 +263,29 @@ class GPSScreen extends Component {
     const { members } = this.state;
     const membersWithLocations = members.filter((m) => !!m.location);
     return membersWithLocations.map((member) => {
-      const { id, location, authData } = member;
-      const { displayName, color } = authData;
+      const { uid, location, name, color } = member;
+      const animateLocation = new AnimatedRegion({
+        latitude: JSON.parse(location.latitude),
+        longitude: JSON.parse(location.longitude),
+        latitudeDelta: LATITUDE_DELTA,
+        longitudeDelta: LONGITUDE_DELTA,
+      });
       return (
         <Marker.Animated
-          key={id}
-          identifier={id}
-          coordinate={location}
+          key={uid}
+          identifier={uid}
+          coordinate={animateLocation}
           pinColor={color}
-          title={displayName}
+          title={name}
         />
       );
     });
   }
+
   render() {
     return (
-      <SafeAreaView style={{ flex: 0.75 }}>
-        <FocusAwareStatusBar barStyle="dark-content" />
+      <SafeAreaView style={{ flex: 1 }}>
+        <StatusBar style="dark-content" />
         <View style={{ flex: 1, paddingHorizontal: 20 }}>
           <MapView
             provider={PROVIDER_GOOGLE}
@@ -303,17 +293,16 @@ class GPSScreen extends Component {
             ref={(ref) => {
               this.map = ref;
             }}
-            region={this.state.region}
-            onRegionChange={this.onRegionChange}
-            onRegionChangeComplete={this.onRegionChangeComplete}
+            initialRegion={{
+              latitude: 37.600425,
+              longitude: -122.385861,
+              latitudeDelta: LATITUDE_DELTA,
+              longitudeDelta: LONGITUDE_DELTA,
+            }}
           >
             {this.createMarkers()}
           </MapView>
         </View>
-        <View>
-          <Text>Drag Up to see Who is connected</Text>
-        </View>
-        {this.createMembers()}
       </SafeAreaView>
     );
   }

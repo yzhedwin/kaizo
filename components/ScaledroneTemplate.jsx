@@ -14,9 +14,8 @@ import * as Location from "expo-location";
 import { StatusBar } from "expo-status-bar";
 const Scaledrone = require("scaledrone-react-native");
 const SCALEDRONE_CHANNEL_ID = require("../scaledrone_channel_id.json");
-const LOCATION_TASK_NAME = "LOCATION_TASK_NAME";
+const ROOM_LOCATION = "observable-location";
 let foregroundSubscription = null;
-
 const screen = Dimensions.get("window");
 
 const ASPECT_RATIO = screen.width / screen.height;
@@ -61,7 +60,7 @@ export default class GPSScreen extends Component {
         authRequest(drone.clientId, name).then((jwt) => drone.authenticate(jwt))
       );
     });
-    room = drone.subscribe("observable-locations", {
+    room = drone.subscribe(ROOM_LOCATION, {
       historyCount: 50, // load 50 past messages
     });
     this.startForegroundUpdate();
