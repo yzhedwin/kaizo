@@ -16,7 +16,7 @@ const renderEmpty = () => {
   <SafeAreaView
     style={{ flex: 1, justifyContent: "space-between", alignItems: "center" }}
   >
-    <StatusBar style="dark-content" />
+    <FocusAwareStatusBar style="dark-content" />
   </SafeAreaView>
   )
 };

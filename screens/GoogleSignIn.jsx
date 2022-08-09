@@ -24,7 +24,6 @@ import { FocusAwareStatusBar } from "../components/FocusAwareStatusBar";
 const image = require("../assets/kaizo-splash.png");
 
 WebBrowser.maybeCompleteAuthSession();
-
 export default function GoogleSignIn() {
   const dispatch = useDispatch();
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
@@ -40,7 +39,8 @@ export default function GoogleSignIn() {
       const credential = GoogleAuthProvider.credential(id_token);
       signInWithCredential(auth, credential).then((result) => {
         /*Update user authorization*/
-        const { uid, displayName, email, photoURL, accessToken } = result.user;
+        const { uid, displayName, email, photoURL, accessToken } =
+          result.user;
         dispatch(
           signIn({
             data: { uid, displayName, email, photoURL },
