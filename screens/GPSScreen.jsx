@@ -247,7 +247,7 @@ class GPSScreen extends Component {
   //store data to firestore and scaledrone
   async authRequest(clientId, userData) {
     const { displayName } = userData;
-    return fetch(`${BASE_URL}:${SERVER_PORT}/auth`, {
+    return fetch(`${BASE_URL}:${SERVER_PORT}/api/scaledrone/auth`, {
       method: "POST",
       headers: {
         Accept: "application/json",
