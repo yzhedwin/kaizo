@@ -8,7 +8,7 @@ import TravelScreen from "../screens/TravelScreen";
 import GPSScreen from "../screens/GPSScreen";
 import { useSelector } from "react-redux";
 import { selectUserData } from "./auth/authSlice";
-import HomeDrawer from "./HomeDrawer";
+import HomeDrawer from "./drawers/HomeDrawer";
 import Loto from "../screens/Loto";
 import { Image } from "react-native";
 
@@ -54,10 +54,10 @@ export default function HomeTabs() {
       <Tab.Screen name="Home Tab" component={HomeDrawer} />
       <Tab.Screen name="Budget Tracker" component={BudgetScreen} />
       <Tab.Screen name="Packing List" component={PListScreen} />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Loto"
         children={(props) => <Loto user={user} {...props} />}
-      />
+      /> */}
       <Tab.Screen name="Travel Planner" component={TravelScreen} />
       <Tab.Screen
         name="Find Each Other"

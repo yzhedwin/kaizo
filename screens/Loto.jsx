@@ -19,7 +19,9 @@ import Constants from "expo-constants";
 
 const SERVER_PORT = Constants.manifest.extra.developmentPort;
 const BASE_URL = Constants.manifest.extra.developmentHost;
-
+/*
+Todo: process text from image and check agaisnt result
+*/
 export default class Loto extends React.Component {
   state = {
     image: null,
@@ -224,7 +226,7 @@ export default class Loto extends React.Component {
           },
         ],
       };
-      const response = await fetch(`${BASE_URL}:${SERVER_PORT}/api/gvision`, {
+      const response = await fetch(`${BASE_URL}:${SERVER_PORT}/api/gvision/imagetext`, {
         method: "POST",
         headers: {
           Accept: "application/json",
